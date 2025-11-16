@@ -7,10 +7,10 @@ class KeysEncryption:
 
     def set_data_enc_key(self, key: bytes):
         key_str = key.decode()
-        keyring.set_password(f"Cryptera{sys.platform}", "key", key_str)
+        keyring.set_password(f"Crypteria{sys.platform}", "dek_master_1", key_str)
 
     def get_data_enc_key(self) -> bytes:
-        key_str = keyring.get_password(f"Cryptera{sys.platform}", "key")
+        key_str = keyring.get_password(f"Crypteria{sys.platform}", "dek_master_1")
         if key_str is None:
             return None
         if key_str.startswith("b'") and key_str.endswith("'"):
@@ -18,4 +18,5 @@ class KeysEncryption:
         return key_str.encode()
 
     def key_for_db(self, key) -> bytes:
-        key_str = keyring.set_password(f"Cryptera_DB{sys.platform}", "db_key", )
+        key_str = keyring.set_password(f"Crypteria{sys.platform}", "db_dek", key)
+        # i will complete it in the next commit xD
