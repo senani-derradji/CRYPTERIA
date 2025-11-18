@@ -1,17 +1,23 @@
 import os,sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
-print(sys.path)
 
 import hashlib
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
 from SDK.validation import DataPayload
-from SDK.SECURITY.sensitive import KeysEncryption
+from SDK.SECURITY.sensetive import KeysEncryption
 import urllib.request
+from SDK.SERVICES.logs_service import logger
 
 
-def get_password_for_key() -> bytes: return sys.platform+sys.version.split()[0]+str(round(sys.maxsize/(1024**3)))+str(urllib.request.urlopen('https://api.ipify.org').read().decode())
+def get_password_for_key() -> bytes:
+    try:
+     r = sys.platform+sys.version.split()[0]+str(round(sys.maxsize/(1024**3)))+str(urllib.request.urlopen('https://api.ipify.org').read().decode())
+    except Exception as e:
+        logger.error(f"GET PASSWORD FOR KEY ERROR : {e}")
+        r = None
+    return r
 
 
 ENCKEY = KeysEncryption()
@@ -27,10 +33,9 @@ k = hashlib.pbkdf2_hmac(
 )
 
 master_key = HKDF(algorithm=hashes.SHA256(),salt=None,length=32,info=None).derive(k)
-print("MASTER KEY:", master_key)
 
 def generate_key():
-    key = master_key
+    key = Fernet.generate_key()
     ENCKEY.set_data_enc_key(key)
     return key
 
@@ -39,8 +44,6 @@ def load_key():
     if not key:
         key = generate_key()
     return key
-
-print("key",load_key())
 
 def encrypt_data(data: DataPayload, key: bytes) -> bytes:
     fer = Fernet(key)
