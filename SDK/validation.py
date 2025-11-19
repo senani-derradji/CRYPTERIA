@@ -1,11 +1,14 @@
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
+
 from pydantic import BaseModel, field_validator, model_validator
 from typing import Optional
 import os, sys
 from pathlib import Path
 
 max_size = 5_000_000
-cloud_providers = ['AZURE', 'GCP', 'AWS']
-cloud_personal  = ['google_drive']
+cloud_providers = ['dropbox', 'google_drive']
+
 data_accepted_types = ["jpg", "jpeg", "png",
                        "pdf", "txt", "key", "bin", ]
 
@@ -47,4 +50,13 @@ class DataTypes(BaseModel):
         if value.lower() not in data_accepted_types:
             raise ValueError("Data Type Not Supported")
         return value.lower()
+
+class ProvidorValidation(BaseModel):
+    providor: str
+
+    @field_validator("providor")
+    def validate_providor(cls, value):
+        if value.upper() not in cloud_providers:
+            raise ValueError("Cloud Providor Not Supported")
+        return value
 

@@ -6,26 +6,40 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseDownload
-import io
+import io, keyring, json
+from SDK.general_utils import PathManager
+from SDK.SERVICES.logs_service import logger
 
 
-SCOPES = ['https://www.googleapis.com/auth/drive.file']
+SERVICE = "CrypteriaGoogleDrive"
+SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
 def authenticate():
+    data = keyring.get_password(SERVICE, "credentials")
     creds = None
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+    if data:
+        info = json.loads(data)
+        creds = Credentials(
+            token=info.get("token"),
+            refresh_token=info.get("refresh_token"),
+            token_uri=info.get("token_uri"),
+            client_id=info.get("client_id"),
+            client_secret=info.get("client_secret"),
+            scopes=SCOPES
+        )
+
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES
-            )
+            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+
+        keyring.set_password(SERVICE, "credentials", creds.to_json())
+
     return creds
+
 
 
 def upload_to_drive(file_path, file_name=None, folder_id=None):
@@ -44,8 +58,8 @@ def upload_to_drive(file_path, file_name=None, folder_id=None):
         fields='id'
     ).execute()
 
-    print(f"Uploaded Successfully! File ID: {file.get('id')}")
     print(f"VIEW : https://drive.google.com/file/d/{file.get('id')}/view")
+    logger.info(f"Uploaded Successfully! File ID: {file.get('id')}")
     return file.get('id')
 
 
@@ -72,7 +86,7 @@ def download_file(file_id):
     file_info = service.files().get(fileId=file_id, fields="name").execute()
     file_name = file_info['name']
 
-    destination_path = file_name
+    destination_path = PathManager.get_temp_folder("CryperaBin") / file_name
 
     request = service.files().get_media(fileId=file_id)
     fh = io.FileIO(destination_path, 'wb')
@@ -80,7 +94,9 @@ def download_file(file_id):
     done = False
     while not done:
         status, done = downloader.next_chunk()
-        print(f"Download {int(status.progress() * 100)}%")
+        print(f"Download {int(status.progress() * 100)}.")
 
-    print(f"File downloaded to: {destination_path}")
-    return destination_path
+    logger.info(f"Downloaded Successfully! File path: {destination_path}")
+
+
+    return  destination_path

@@ -21,3 +21,4 @@ class File(Base):
     file_path = Column(LargeBinary, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     action = Column(String)
+    providor = Column(String)
