@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Union
 
 from SDK.UTILS.validation import DataTypeValidate
+from SDK.SECURITY.security_utils import save_decrypted_data
+
 
 
 def load_data(data: Union[Path, DataTypeValidate]) -> bytes:
@@ -97,3 +99,16 @@ def load_large_data(service, username):
         blocks.append(block)
 
     return "".join(blocks)
+
+
+def check_data_in_tmp_before_download_upload(file : Path):
+    
+    for f in os.listdir(PathManager.get_temp_folder()):
+        if f[:-4] == file.stem:
+            print(f[:-4], " :f: FILE EXISTS :file: ", file)
+            return True, Path(f)
+
+        else:
+            continue
+    return False
+
