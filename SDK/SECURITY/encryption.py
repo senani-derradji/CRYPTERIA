@@ -1,11 +1,5 @@
-import os,sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
-
-import hashlib
-
+import hashlib, base64, keyring, sys, os
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-from cryptography.hazmat.primitives import hashes
 
 from SDK.UTILS.validation import DataPayload
 from SDK.SECURITY.sensetive import KeysEncryption
@@ -14,41 +8,53 @@ from SDK.SERVICES.logs_service import logger
 
 def get_password_for_key() -> bytes:
 
-    try: r = sys.platform+sys.version.split()[0]+str(round(sys.maxsize/(1024**3)))
+    try:
+        r = sys.platform+sys.version.split()[0]+str(round(sys.maxsize/(1024**3)))
 
-    except Exception as e: logger.error(f"GET PASSWORD FOR KEY ERROR : {e}") ; r = None
+    except Exception as e:
+        print(f"GET PASSWORD FOR KEY ERROR : {e}")
+        logger.error(f"GET PASSWORD FOR KEY ERROR : {e}") ; r = None
 
-    return r
-
-
-ENCKEY = KeysEncryption()
-password = get_password_for_key()
-
-if isinstance(password, str): password = password.encode()
+    return r.encode()
 
 
-k = hashlib.pbkdf2_hmac(
-    hash_name='sha256',
-    password=password,
-    salt=os.urandom(16),
+def get_salt() -> bytes:
+    try:
+        salt_str = keyring.get_password("Crypteria_INFO", "salt")
+
+        if salt_str is None:
+            salt = os.urandom(16)
+            salt_str = base64.b64encode(salt).decode("ascii")
+            keyring.set_password("Crypteria_INFO", "salt", salt_str)
+            logger.info("Generated new salt and stored in keyring")
+            return salt
+
+        else:
+            return base64.b64decode(salt_str)
+
+    except Exception as e:
+        logger.error(f"GET SALT ERROR : {e}")
+        return os.urandom(16)
+
+
+_k = hashlib.pbkdf2_hmac(
+    hash_name="sha256",
+    password=get_password_for_key(),
+    salt=get_salt(),
     iterations=100000,
     dklen=32
 )
 
 
-master_key = HKDF(algorithm=hashes.SHA256(),salt=None,length=32,info=None).derive(k)
-
-
 def generate_key():
 
-    key = Fernet.generate_key()
-    ENCKEY.set_data_enc_key(key)
+    KeysEncryption.set_data_enc_key(base64.encodebytes(_k))
 
-    return key
+    return base64.encodebytes(_k)
 
 
 def load_key():
-    key = ENCKEY.get_data_enc_key()
+    key = KeysEncryption.get_data_enc_key()
 
     if not key:
         key = generate_key()
@@ -70,6 +76,7 @@ def encrypt_data(data: bytes | DataPayload, key: bytes) -> bytes:
 
 
 def decrypt_data(encrypted_data: bytes, key: bytes) -> bytes:
+    if not encrypted_data or not key: raise ValueError("Missing data or key for decryption")
 
     fer = Fernet(key)
     decrypted = fer.decrypt(encrypted_data)

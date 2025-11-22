@@ -6,12 +6,13 @@ from cryptography.fernet import Fernet
 
 class KeysEncryption:
 
-    def set_data_enc_key(self, key: bytes):
+    @classmethod
+    def set_data_enc_key(cls, key: bytes):
         key_str = key.decode()
         keyring.set_password(f"Crypteria{sys.platform}", "dek_master_1", key_str)
 
-
-    def get_data_enc_key(self) -> bytes:
+    @classmethod
+    def get_data_enc_key(cls) -> bytes:
 
         key_str = keyring.get_password(f"Crypteria{sys.platform}", "dek_master_1")
 
