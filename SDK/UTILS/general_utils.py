@@ -7,6 +7,10 @@ from typing import Union
 
 from SDK.UTILS.validation import DataTypeValidate
 from SDK.SECURITY.security_utils import save_decrypted_data
+from keyring.errors import PasswordDeleteError
+
+
+
 
 
 
@@ -88,7 +92,13 @@ def save_large_data(service, username, data, block_size=500):
 
 
 def load_large_data(service, username):
-    count = int(keyring.get_password(service, f"{username}_blocks_count"))
+
+    k = keyring.get_password(service, f"{username}_blocks_count")
+
+    if k is None:
+        return None
+
+    count = int(k)
     blocks = []
 
     for idx in range(count):
@@ -100,15 +110,35 @@ def load_large_data(service, username):
 
     return "".join(blocks)
 
+def delete_large_data(service, username):
+    count = int(keyring.get_password(service, f"{username}_blocks_count"))
+    blocks = []
+
+    for idx in range(count):
+        try :
+
+            keyring.delete_password(service, f"{username}_block_{idx}")
+
+        except PasswordDeleteError as e:
+            print("error deletion : ", e)
+            continue
+
+    try:
+        keyring.delete_password(service, f"{username}_blocks_count")
+    except PasswordDeleteError as e:
+        print("error deletion : ", e)
+
+    return True
+
+
+
 
 def check_data_in_tmp_before_download_upload(file : Path):
-    
-    for f in os.listdir(PathManager.get_temp_folder()):
-        if f[:-4] == file.stem:
-            print(f[:-4], " :f: FILE EXISTS :file: ", file)
-            return True, Path(f)
 
-        else:
-            continue
-    return False
+    for f in os.listdir(PathManager.get_temp_folder()):
+        if f[:-4] == file.stem: return True, PathManager.get_temp_folder() / f
+        else: continue
+
+    return False, None
+
 

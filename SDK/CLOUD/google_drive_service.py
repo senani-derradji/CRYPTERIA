@@ -7,15 +7,13 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseDownload
 import io, keyring, json
-from SDK.UTILS.general_utils import PathManager
-from SDK.SERVICES.logs_service import logger
 
 
 SERVICE = "CrypteriaGoogleDrive"
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
 def authenticate():
-    
+
     data = keyring.get_password(SERVICE, "credentials")
     creds = None
 
@@ -44,6 +42,7 @@ def authenticate():
 
 
 def upload_to_drive(file_path, file_name=None, folder_id=None):
+    from SDK.SERVICES.logs_service import logger
 
     creds = authenticate()
     service = build('drive', 'v3', credentials=creds)
@@ -79,12 +78,15 @@ def list_files(page_size=10):
 
 
 def download_file(file_id):
+    from SDK.SERVICES.logs_service import logger
+    from SDK.UTILS.general_utils import PathManager
 
     creds = authenticate()
     service = build('drive', 'v3', credentials=creds)
 
     file_info = service.files().get(fileId=file_id, fields="name").execute()
     file_name = file_info['name']
+
 
     destination_path = PathManager.get_temp_folder("CryperaBin") / file_name
 
