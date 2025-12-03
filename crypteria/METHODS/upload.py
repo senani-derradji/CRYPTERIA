@@ -1,18 +1,18 @@
-from SECURITY.encryption import load_key
+from  crypteria.SECURITY.encryption import load_key
 from pathlib import Path
-from SDK.CLOUD.google_drive_service import upload_to_drive
-from SDK.CLOUD.dropbox_service import upload_file as upload_to_dropbox
-from DBS.crud import create_file_record
-from DBS.database import SessionLocal
-from SDK.SECURITY.security_utils import save_encrypted_data as SED
-from SDK.UTILS.general_utils import (
+from  crypteria.CLOUD.google_drive_service import upload_to_drive
+from  crypteria.CLOUD.dropbox_service import upload_file as upload_to_dropbox
+from  crypteria.DBS.crud import create_file_record
+from  crypteria.DBS.database import SessionLocal
+from  crypteria.SECURITY.security_utils import save_encrypted_data as SED
+from  crypteria.UTILS.general_utils import (
                get_name_of_file,
                get_type_of_file,
                get_length_of_file,
                get_path_of_file
 )
 import os
-from SDK.SERVICES.logs_service import logger
+from  crypteria.SERVICES.logs_service import logger
 
 
 db = SessionLocal()

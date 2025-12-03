@@ -1,9 +1,9 @@
 import os, sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from SDK.SECURITY.encryption import load_key
-from SDK.SECURITY.security_utils import save_decrypted_data
-from SDK.DBS.crud import (
+from  crypteria.SECURITY.encryption import load_key
+from  crypteria.SECURITY.security_utils import save_decrypted_data
+from  crypteria.DBS.crud import (
     get_file_by_id,
     get_data_type_by_id,
     create_file_record,
@@ -11,14 +11,14 @@ from SDK.DBS.crud import (
     get_path_by_file_id,
     get_file_name_by_enc_file_id,
 )
-from SDK.DBS.database import SessionLocal
-from SDK.SERVICES.logs_service import logger
-from SDK.SECURITY.sensetive import KeysEncryption
-from SDK.UTILS.general_utils import PathManager
-from SDK.UTILS.general_utils import check_data_in_tmp_before_download_upload as CHECK_BEFORE_DO
+from  crypteria.DBS.database import SessionLocal
+from  crypteria.SERVICES.logs_service import logger
+from  crypteria.SECURITY.sensetive import KeysEncryption
+from  crypteria.UTILS.general_utils import PathManager
+from  crypteria.UTILS.general_utils import check_data_in_tmp_before_download_upload as CHECK_BEFORE_DO
 from pathlib import Path
-from SDK.CLOUD.dropbox_service import download_file as download_file_dropbox
-from SDK.CLOUD.google_drive_service import download_file as download_file_drive
+from  crypteria.CLOUD.dropbox_service import download_file as download_file_dropbox
+from  crypteria.CLOUD.google_drive_service import download_file as download_file_drive
 
 
 

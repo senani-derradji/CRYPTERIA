@@ -1,7 +1,7 @@
 from pathlib import Path
 from sqlalchemy.orm import Session
-from SDK.DBS.models import File
-from SDK.SECURITY.sensetive import KeysEncryption
+from .models import File
+from crypteria.SECURITY.sensetive import KeysEncryption
 
 
 enc_dec = KeysEncryption()

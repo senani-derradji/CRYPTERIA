@@ -1,7 +1,7 @@
 import dropbox, os, keyring
 from pathlib import Path
-from SDK.UTILS.general_utils import get_os_type
-# from SDK.UTILS.general_utils import save_large_data, load_large_data
+from  crypteria.UTILS.general_utils import get_os_type
+# from UTILS.general_utils import save_large_data, load_large_data
 from cryptography.fernet import Fernet
 from dropbox.oauth import DropboxOAuth2FlowNoRedirect
 from dropbox.exceptions import ApiError
@@ -9,7 +9,6 @@ from dropbox.files import UploadError, WriteError, WriteConflictError
 
 
 _KEY = "DATA_DROP_KEY"
-# _TOKEN_SYS_NAME = "TOKEN_DROP"
 _SERVICE = f"Crypteria{get_os_type()}_DropBox"
 
 
@@ -57,7 +56,7 @@ def upload_file(local_path: Path , dropbox_path=None):
     ACCESS_TOKEN = authenticate().decode()
     dbx = dropbox.Dropbox(ACCESS_TOKEN)
 
-    from SDK.SERVICES.logs_service import logger
+    from SERVICES.logs_service import logger
 
     if dropbox_path is None: dropbox_path = f"/{Path(local_path).name}"
 
@@ -65,6 +64,7 @@ def upload_file(local_path: Path , dropbox_path=None):
         with open(local_path, "rb") as f:
             global result
             result = dbx.files_upload(f.read(), dropbox_path, mute=True)
+
     except ApiError as e:
         if isinstance(e.error, UploadError):
             print(f"Conflict: File '{local_path.stem}' already exists.")
@@ -80,7 +80,7 @@ def list_files(folder_path=""):
     ACCESS_TOKEN = authenticate().decode()
     dbx = dropbox.Dropbox(ACCESS_TOKEN)
 
-    from SDK.SERVICES.logs_service import logger
+    from SERVICES.logs_service import logger
 
     response = dbx.files_list_folder(folder_path)
 
@@ -102,8 +102,8 @@ def download_file(file_path_or_id):
     ACCESS_TOKEN = authenticate().decode()
     dbx = dropbox.Dropbox(ACCESS_TOKEN)
 
-    from SDK.SERVICES.logs_service import logger
-    from SDK.UTILS.general_utils import PathManager
+    from SERVICES.logs_service import logger
+    from UTILS.general_utils import PathManager
 
     if file_path_or_id.startswith("id:"):
         metadata = dbx.files_get_metadata(file_path_or_id)

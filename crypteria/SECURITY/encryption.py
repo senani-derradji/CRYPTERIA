@@ -1,9 +1,9 @@
 import hashlib, base64, keyring, sys, os
 from cryptography.fernet import Fernet
 
-from SDK.UTILS.validation import DataPayload
-from SDK.SECURITY.sensetive import KeysEncryption
-from SDK.SERVICES.logs_service import logger
+from  crypteria.UTILS.validation import DataPayload
+from .sensetive import KeysEncryption
+from  crypteria.SERVICES.logs_service import logger
 
 
 def get_password_for_key() -> bytes:

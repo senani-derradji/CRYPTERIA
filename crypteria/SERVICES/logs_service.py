@@ -1,5 +1,5 @@
 import os, sys, logging, ctypes
-from SDK.UTILS.general_utils import PathManager
+from  crypteria.UTILS.general_utils import PathManager
 
 
 app_dir = PathManager.get_appdata_path()

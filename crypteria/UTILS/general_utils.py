@@ -5,8 +5,8 @@ import keyring
 from pathlib import Path
 from typing import Union
 
-from SDK.UTILS.validation import DataTypeValidate
-from SDK.SECURITY.security_utils import save_decrypted_data
+from .validation import DataTypeValidate
+from  crypteria.SECURITY.security_utils import save_decrypted_data
 from keyring.errors import PasswordDeleteError
 
 

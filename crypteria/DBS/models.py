@@ -2,7 +2,7 @@ import os, sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sqlalchemy import Column, Integer, String, LargeBinary
-from SDK.DBS.database import Base
+from .database import Base
 from sqlalchemy import DateTime
 from datetime import datetime
 

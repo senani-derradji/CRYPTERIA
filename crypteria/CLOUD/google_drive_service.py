@@ -42,7 +42,7 @@ def authenticate():
 
 
 def upload_to_drive(file_path, file_name=None, folder_id=None):
-    from SDK.SERVICES.logs_service import logger
+    from SERVICES.logs_service import logger
 
     creds = authenticate()
     service = build('drive', 'v3', credentials=creds)
@@ -78,8 +78,8 @@ def list_files(page_size=10):
 
 
 def download_file(file_id):
-    from SDK.SERVICES.logs_service import logger
-    from SDK.UTILS.general_utils import PathManager
+    from SERVICES.logs_service import logger
+    from UTILS.general_utils import PathManager
 
     creds = authenticate()
     service = build('drive', 'v3', credentials=creds)
