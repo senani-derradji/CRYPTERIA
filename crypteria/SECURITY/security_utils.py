@@ -1,16 +1,12 @@
-from pathlib import Path
-
+from  pathlib import Path
 from  crypteria.UTILS.validation import DataTypeValidate
-
 
 bin_files_path = Path()
 
-
 def save_encrypted_data(dt: Path | DataTypeValidate, key: bytes):
 
-    from  crypteria.UTILS.general_utils import load_data
+    from  crypteria.UTILS.general_utils import load_data, PathManager
     from .encryption import encrypt_data
-    from  crypteria.UTILS.general_utils import PathManager
 
     if isinstance(dt, Path):
         dt = DataTypeValidate(file_path=dt).file_path
@@ -21,7 +17,6 @@ def save_encrypted_data(dt: Path | DataTypeValidate, key: bytes):
     with open(enc_data, 'wb') as f: f.write(en_data_info)
 
     return enc_data
-
 
 
 def save_decrypted_data(dt: Path, key: bytes, _type: str, dest_path: Path = Path.cwd()) -> bytes:

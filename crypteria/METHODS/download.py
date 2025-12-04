@@ -16,7 +16,7 @@ from  crypteria.SERVICES.logs_service import logger
 from  crypteria.SECURITY.sensetive import KeysEncryption
 from  crypteria.UTILS.general_utils import PathManager
 from  crypteria.UTILS.general_utils import check_data_in_tmp_before_download_upload as CHECK_BEFORE_DO
-from pathlib import Path
+from  pathlib import Path
 from  crypteria.CLOUD.dropbox_service import download_file as download_file_dropbox
 from  crypteria.CLOUD.google_drive_service import download_file as download_file_drive
 
@@ -41,8 +41,6 @@ class DownloadDataCloud:
         id_ = enc_dec.services_key('dec', file_id_enc).decode()
         data_file_type = get_data_type_by_id(db, file_id_enc)
         file_path = get_path_by_file_id(db, file_id_enc)
-        print("FILE PATH : ", file_path)
-        print(providor_name)
 
         check, d_file = CHECK_BEFORE_DO(file_path)
 

@@ -22,21 +22,15 @@ class UploadDataCloud:
         self.image = image
 
 
-    def upload_encrypted_file(self, cloud : str):
+    def upload_encrypted_file(self, cloud : str, enc):
 
         __key = load_key()
 
         enc_image = SED(self.image, __key)
-        print(enc_image, " ENC IMAGE -------------")
 
-        if cloud == "google_drive":
-            res = upload_to_drive(enc_image)
-        elif cloud == "dropbox":
-            print("INSIDE DROPBOX UPLOAD TO .......")
-            res = upload_to_dropbox(enc_image)
+        if cloud == "google_drive": res = upload_to_drive(enc_image)
+        elif cloud == "dropbox": res = upload_to_dropbox(enc_image)
         else: return False
-
-        print(res)
 
         if create_file_record(
             db = db,
