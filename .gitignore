@@ -1,0 +1,17 @@
+__pycache__
+*.log
+*.key
+*.jpg
+*.bin
+test*
+*.txt
+*.json
+*.db
+*env
+venv
+*test*
+*.jpg
+*.txt
+credentials.json
+*.jpg
+test.py
