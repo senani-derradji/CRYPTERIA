@@ -16,7 +16,6 @@ def load_data(data: Union[Path, DataTypeValidate]) -> bytes:
     raise FileNotFoundError(f"{path} is not a valid file.")
 
 
-
 def get_os_type() -> str: return sys.platform
 
 def get_length_of_file(file: Path) -> int: return str(len(load_data(file)))
@@ -30,6 +29,11 @@ def get_path_of_file(file: Path) -> str: return str(file)
 
 
 class PathManager:
+
+    @staticmethod
+    def get_os_type() -> str:
+        """Get the operating system type"""
+        return sys.platform
 
     @staticmethod
     def get_appdata_path(app_name="Crypteria") -> Path:

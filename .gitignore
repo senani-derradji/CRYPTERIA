@@ -12,6 +12,5 @@ venv
 *test*
 *.jpg
 *.txt
-credentials.json
+*.json
 *.jpg
-test.py

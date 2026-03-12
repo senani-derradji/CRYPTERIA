@@ -1,3 +1,42 @@
+Metadata-Version: 2.4
+Name: crypteria
+Version: 1.0.0
+Summary: A powerful local-first encryption and secure cloud-storage management toolkit in Python.
+Author-email: Senani Derradji <derradji.senani.1@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/senani-derradji/crypteria
+Project-URL: Repository, https://github.com/senani-derradji/crypteria
+Project-URL: Issues, https://github.com/senani-derradji/crypteria/issues
+Keywords: encryption,security,cryptography,cloud,google-drive,backup,aes
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Security :: Cryptography
+Classifier: Topic :: System :: Filesystems
+Classifier: Topic :: System :: Archiving :: Backup
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: cryptography>=45.0.0
+Requires-Dist: keyring>=25.0.0
+Requires-Dist: SQLAlchemy>=2.0.0
+Requires-Dist: google-api-python-client>=2.0.0
+Requires-Dist: google-auth-oauthlib>=1.0.0
+Provides-Extra: all
+Requires-Dist: pydantic>=2.0.0; extra == "all"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: sphinx>=7.0.0; extra == "docs"
+Requires-Dist: myst-parser>=2.0.0; extra == "docs"
+
 # Crypteria
 
 <p align="center">

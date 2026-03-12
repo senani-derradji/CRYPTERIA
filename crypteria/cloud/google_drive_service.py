@@ -50,6 +50,7 @@ def authenticate():
 def upload_to_drive(file_path, file_name=None, folder_id=None):
 
     creds = authenticate()
+    
     service = build('drive', 'v3', credentials=creds)
     if file_name is None: file_name = os.path.basename(file_path)
     file_metadata = {'name': file_name}

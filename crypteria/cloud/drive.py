@@ -9,28 +9,67 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from utils.general_utils import PathManager
 from services.logs_service import logger
+from security.crypto import UniversalCrypto, CryptoMode, KeyManager
 from pathlib import Path
 
 
 SERVICE = "CrypteriaGoogleDrive"
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
+# Key manager for encrypting credentials
+_credential_key_manager = KeyManager()
 
-def authenticate(credentials_path: Path or None = None):
+# Ensure credential encryption key exists
+_cred_key = _credential_key_manager.get_key("drive_credential_key")
+if _cred_key is None:
+    _cred_key = _credential_key_manager.generate_key(CryptoMode.GCM)
+    _credential_key_manager.store_key(_cred_key, "drive_credential_key")
 
-    data = keyring.get_password(SERVICE, "credentials")
+
+def authenticate(credentials_path: Path or None = None, encrypt_credentials: bool = True):
+    """Authenticate with Google Drive, optionally encrypting stored credentials"""
+
+    # Try to get encrypted credentials
+    encrypted_creds = keyring.get_password(SERVICE, "credentials_encrypted")
     creds = None
 
-    if data is not None:
-        info = json.loads(data)
-        creds = Credentials(
-            token=info.get("token"),
-            refresh_token=info.get("refresh_token"),
-            token_uri=info.get("token_uri"),
-            client_id=info.get("client_id"),
-            client_secret=info.get("client_secret"),
-            scopes=SCOPES
-        )
+    if encrypted_creds and encrypt_credentials:
+        try:
+            # Decrypt stored credentials
+            crypto = UniversalCrypto(_cred_key, CryptoMode.GCM)
+            # Format: nonce + ciphertext
+            parts = encrypted_creds.split(':')
+            if len(parts) == 2:
+                nonce = bytes.fromhex(parts[0])
+                ciphertext = bytes.fromhex(parts[1])
+                decrypted_json = crypto.decrypt_gcm(ciphertext, _cred_key, nonce)
+                info = json.loads(decrypted_json)
+                creds = Credentials(
+                    token=info.get("token"),
+                    refresh_token=info.get("refresh_token"),
+                    token_uri=info.get("token_uri"),
+                    client_id=info.get("client_id"),
+                    client_secret=info.get("client_secret"),
+                    scopes=SCOPES
+                )
+                logger.info("Using encrypted stored credentials")
+        except Exception as e:
+            logger.warning(f"Could not decrypt stored credentials: {e}")
+            creds = None
+
+    # If no encrypted credentials, try unencrypted (backward compatibility)
+    if creds is None:
+        data = keyring.get_password(SERVICE, "credentials")
+        if data is not None:
+            info = json.loads(data)
+            creds = Credentials(
+                token=info.get("token"),
+                refresh_token=info.get("refresh_token"),
+                token_uri=info.get("token_uri"),
+                client_id=info.get("client_id"),
+                client_secret=info.get("client_secret"),
+                scopes=SCOPES
+            )
 
     if not creds or not creds.valid:
 
@@ -54,8 +93,22 @@ def authenticate(credentials_path: Path or None = None):
             flow = InstalledAppFlow.from_client_secrets_file(str(credentials_path), SCOPES)
             creds = flow.run_local_server(port=0)
 
-        keyring.set_password(SERVICE, "credentials", creds.to_json())
-        print("Credentials saved in keyring.")
+        # Store credentials (encrypted if enabled)
+        creds_json = creds.to_json()
+        if encrypt_credentials:
+            crypto = UniversalCrypto(_cred_key, CryptoMode.GCM)
+            ciphertext, nonce = crypto.encrypt_gcm(creds_json.encode())
+            encrypted = f"{nonce.hex()}:{ciphertext.hex()}"
+            keyring.set_password(SERVICE, "credentials_encrypted", encrypted)
+            # Remove unencrypted version if exists
+            try:
+                keyring.delete_password(SERVICE, "credentials")
+            except:
+                pass
+            logger.info("Credentials encrypted and saved in keyring.")
+        else:
+            keyring.set_password(SERVICE, "credentials", creds_json)
+            logger.info("Credentials saved in keyring (unencrypted).")
 
     return creds
 
