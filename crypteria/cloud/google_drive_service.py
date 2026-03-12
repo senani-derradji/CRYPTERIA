@@ -8,11 +8,14 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseDownload
-import io, keyring, json
-import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+import io
+import keyring
+import json
+import os
+import sys
 
-from utils.general_utils import PathManager
-from services.logs_service import logger
+from ..utils.general_utils import PathManager
+from ..services.logs_service import logger
 
 
 SERVICE = "CrypteriaGoogleDrive"
@@ -50,7 +53,7 @@ def authenticate():
 def upload_to_drive(file_path, file_name=None, folder_id=None):
 
     creds = authenticate()
-    
+
     service = build('drive', 'v3', credentials=creds)
     if file_name is None: file_name = os.path.basename(file_path)
     file_metadata = {'name': file_name}

@@ -1,11 +1,11 @@
-import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+import os
+import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from utils.general_utils import PathManager
+from ..utils.general_utils import PathManager
 
 # Import Base and File from models to avoid circular import and ensure proper registration
-from dbs.models import Base, File
+from .models import Base, File
 
 p_m = PathManager.get_appdata_path()
 data_dir = p_m / "data"

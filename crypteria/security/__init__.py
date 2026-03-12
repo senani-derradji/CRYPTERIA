@@ -2,7 +2,7 @@
 # Universal encryption for all data types
 
 # Crypto classes and functions
-from security.crypto import (
+from .crypto import (
     # Classes
     CryptoMode,
     DataType,
@@ -24,7 +24,7 @@ from security.crypto import (
 )
 
 # Legacy encryption functions (from encryption.py)
-from security.encryption import (
+from .encryption import (
     generate_key,
     load_key,
     encrypt_data,
@@ -32,13 +32,13 @@ from security.encryption import (
 )
 
 # Security utilities
-from security.security_utils import (
+from .security_utils import (
     save_encrypted_data,
     save_decrypted_data,
 )
 
 # Key management
-from security.sensetive import KeysEncryption
+from .sensetive import KeysEncryption
 
 __all__ = [
     # New crypto module

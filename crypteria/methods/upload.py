@@ -1,23 +1,25 @@
 
 from pathlib import Path
-import os, sys, hashlib
+import os
+import sys
+import hashlib
 
-from security.encryption import load_key
-from security.crypto import (
+from ..security.encryption import load_key
+from ..security.crypto import (
     UniversalCrypto, CryptoMode, encrypt_file,
     get_default_crypto, set_default_key, KeyManager
 )
-from cloud.google_drive_service import upload_to_drive
-from dbs.crud import create_file_record
-from dbs.database import SessionLocal
-from security.security_utils import save_encrypted_data as SED
-from utils.general_utils import (
+from ..cloud.google_drive_service import upload_to_drive
+from ..dbs.crud import create_file_record
+from ..dbs.database import SessionLocal
+from ..security.security_utils import save_encrypted_data as SED
+from ..utils.general_utils import (
                get_name_of_file,
                get_type_of_file,
                get_length_of_file,
                get_path_of_file
 )
-from services.logs_service import logger
+from ..services.logs_service import logger
 
 
 db = SessionLocal()

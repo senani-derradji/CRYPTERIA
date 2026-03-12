@@ -1,15 +1,19 @@
 from __future__ import print_function
-import os.path, io, keyring, json
-import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+import os.path
+import io
+import keyring
+import json
+import os
+import sys
 
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
-from utils.general_utils import PathManager
-from services.logs_service import logger
-from security.crypto import UniversalCrypto, CryptoMode, KeyManager
+from ..utils.general_utils import PathManager
+from ..services.logs_service import logger
+from ..security.crypto import UniversalCrypto, CryptoMode, KeyManager
 from pathlib import Path
 
 

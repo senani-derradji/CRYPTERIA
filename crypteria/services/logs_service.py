@@ -1,5 +1,8 @@
-import os, sys, logging, ctypes ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.general_utils import PathManager
+import os
+import sys
+import logging
+import ctypes
+from ..utils.general_utils import PathManager
 
 
 app_dir = PathManager.get_appdata_path()

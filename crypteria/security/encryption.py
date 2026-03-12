@@ -1,14 +1,14 @@
-import os,sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
+import os
+import sys
 import hashlib
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
 
-from utils.validation import DataPayload
-from security.sensetive import KeysEncryption
-from services.logs_service import logger
+from ..utils.validation import DataPayload
+from .sensetive import KeysEncryption
+from ..services.logs_service import logger
 
 
 def get_password_for_key() -> bytes:

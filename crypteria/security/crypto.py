@@ -1,11 +1,8 @@
-import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 import hashlib
 import base64
 import json
 import keyring
+import sys, os
 from typing import Union, Tuple, Optional
 from pathlib import Path
 from enum import Enum
@@ -18,8 +15,8 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
-from security.sensetive import KeysEncryption
-from services.logs_service import logger
+from .sensetive import KeysEncryption
+from ..services.logs_service import logger
 
 
 class CryptoMode(Enum):

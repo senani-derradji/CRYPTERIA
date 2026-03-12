@@ -1,5 +1,5 @@
-import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+import os
+import sys
 from sqlalchemy import Column, Integer, String, LargeBinary, DateTime, create_engine
 from sqlalchemy.orm import declarative_base
 from datetime import datetime

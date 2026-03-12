@@ -1,11 +1,10 @@
-import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-
+import os
+import sys
 from sqlalchemy.orm import Session
-from dbs.models import File
-from security.sensetive import KeysEncryption
-from security.crypto import UniversalCrypto, CryptoMode, KeyManager
-from services.logs_service import logger
+from .models import File
+from ..security.sensetive import KeysEncryption
+from ..security.crypto import UniversalCrypto, CryptoMode, KeyManager
+from ..services.logs_service import logger
 
 
 enc_dec = KeysEncryption()

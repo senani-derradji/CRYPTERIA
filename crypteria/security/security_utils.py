@@ -1,11 +1,10 @@
-import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+import os
+import sys
 from pathlib import Path
 
-from utils.validation import DataTypeValidate
-from security.encryption import encrypt_data, decrypt_data
-from utils.general_utils import load_data
-from utils.general_utils import PathManager
+from ..utils.validation import DataTypeValidate
+from .encryption import encrypt_data, decrypt_data
+from ..utils.general_utils import load_data, PathManager
 
 
 bin_files_path = Path()

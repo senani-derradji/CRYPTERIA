@@ -1,15 +1,15 @@
-import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+import os
+import sys
 import hashlib
 
-from security.encryption import load_key
-from security.security_utils import save_decrypted_data
-from security.crypto import (
+from ..security.encryption import load_key
+from ..security.security_utils import save_decrypted_data
+from ..security.crypto import (
     UniversalCrypto, CryptoMode, decrypt_file,
     KeyManager
 )
-from cloud.google_drive_service import download_file as download_file_drive
-from dbs.crud import (
+from ..cloud.google_drive_service import download_file as download_file_drive
+from ..dbs.crud import (
     get_file_by_id,
     get_data_type_by_id,
     create_file_record,
@@ -19,10 +19,10 @@ from dbs.crud import (
     get_file_nonce,
     _decrypt_field
 )
-from dbs.database import SessionLocal
-from services.logs_service import logger
-from security.sensetive import KeysEncryption
-from utils.general_utils import PathManager
+from ..dbs.database import SessionLocal
+from ..services.logs_service import logger
+from ..security.sensetive import KeysEncryption
+from ..utils.general_utils import PathManager
 from pathlib import Path
 
 db = SessionLocal()

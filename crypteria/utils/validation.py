@@ -1,5 +1,5 @@
-import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
-
+import os
+import sys
 from pydantic import BaseModel, field_validator
 from pathlib import Path
 
