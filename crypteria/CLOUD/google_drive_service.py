@@ -1,5 +1,7 @@
 from __future__ import print_function
+
 import os.path
+
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -7,6 +9,10 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseDownload
 import io, keyring, json
+import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from utils.general_utils import PathManager
+from services.logs_service import logger
 
 
 SERVICE = "CrypteriaGoogleDrive"
@@ -42,9 +48,9 @@ def authenticate():
 
 
 def upload_to_drive(file_path, file_name=None, folder_id=None):
-    from SERVICES.logs_service import logger
 
     creds = authenticate()
+    
     service = build('drive', 'v3', credentials=creds)
     if file_name is None: file_name = os.path.basename(file_path)
     file_metadata = {'name': file_name}
@@ -78,15 +84,12 @@ def list_files(page_size=10):
 
 
 def download_file(file_id):
-    from SERVICES.logs_service import logger
-    from UTILS.general_utils import PathManager
 
     creds = authenticate()
     service = build('drive', 'v3', credentials=creds)
 
     file_info = service.files().get(fileId=file_id, fields="name").execute()
     file_name = file_info['name']
-
 
     destination_path = PathManager.get_temp_folder("CryperaBin") / file_name
 

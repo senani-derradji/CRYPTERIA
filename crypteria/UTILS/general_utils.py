@@ -1,17 +1,10 @@
-import os, sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
+import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import keyring
 from pathlib import Path
 from typing import Union
 
-from .validation import DataTypeValidate
-from  crypteria.SECURITY.security_utils import save_decrypted_data
-from keyring.errors import PasswordDeleteError
-
-
-
-
+from utils.validation import DataTypeValidate
 
 
 def load_data(data: Union[Path, DataTypeValidate]) -> bytes:
@@ -21,7 +14,6 @@ def load_data(data: Union[Path, DataTypeValidate]) -> bytes:
         return path.read_bytes()
 
     raise FileNotFoundError(f"{path} is not a valid file.")
-
 
 
 def get_os_type() -> str: return sys.platform
@@ -37,6 +29,11 @@ def get_path_of_file(file: Path) -> str: return str(file)
 
 
 class PathManager:
+
+    @staticmethod
+    def get_os_type() -> str:
+        """Get the operating system type"""
+        return sys.platform
 
     @staticmethod
     def get_appdata_path(app_name="Crypteria") -> Path:
@@ -92,13 +89,13 @@ def save_large_data(service, username, data, block_size=500):
 
 
 def load_large_data(service, username):
+    count_value = keyring.get_password(service, f"{username}_blocks_count")
 
-    k = keyring.get_password(service, f"{username}_blocks_count")
-
-    if k is None:
+    if count_value is None:
         return None
 
-    count = int(k)
+    count = int(count_value)
+
     blocks = []
 
     for idx in range(count):
@@ -109,36 +106,3 @@ def load_large_data(service, username):
         blocks.append(block)
 
     return "".join(blocks)
-
-def delete_large_data(service, username):
-    count = int(keyring.get_password(service, f"{username}_blocks_count"))
-    blocks = []
-
-    for idx in range(count):
-        try :
-
-            keyring.delete_password(service, f"{username}_block_{idx}")
-
-        except PasswordDeleteError as e:
-            print("error deletion : ", e)
-            continue
-
-    try:
-        keyring.delete_password(service, f"{username}_blocks_count")
-    except PasswordDeleteError as e:
-        print("error deletion : ", e)
-
-    return True
-
-
-
-
-def check_data_in_tmp_before_download_upload(file : Path):
-
-    for f in os.listdir(PathManager.get_temp_folder()):
-        if f[:-4] == file.stem: return True, PathManager.get_temp_folder() / f
-        else: continue
-
-    return False, None
-
-

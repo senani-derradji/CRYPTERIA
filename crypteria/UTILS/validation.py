@@ -1,17 +1,19 @@
-import os, sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
+import os, sys ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 
 from pydantic import BaseModel, field_validator
-
-import os, sys
 from pathlib import Path
 
 
-max_size = 10_000_000
-data_accepted_types = ["jpg", "jpeg", "png", "pdf", "txt", "key", "bin"]
-
-
-def is_valid_file_type(path: Path) -> bool: return str(path).lower().endswith(tuple(data_accepted_types))
+max_size = 100_000_000
+data_accepted_types = [
+    "jpg", "jpeg", "png", "gif", "bmp", "tiff", "svg", "webp",
+    "txt", "pdf", "doc", "docx", "odt", "rtf", "xls", "xlsx", "ods", "ppt", "pptx",
+    "key", "pem", "pub", "cfg", "ini", "json", "yaml", "yml", "toml",
+    "zip", "tar", "gz", "rar", "7z", "bz2",
+    "db", "sqlite", "sqlite3", "mdb", "accdb", "sql",
+    "bin", "exe", "dll", "so", "o", "class",
+    "mp3", "wav", "ogg", "flac", "mp4", "mkv", "avi", "mov"
+]
 
 
 class DataPayload(BaseModel):

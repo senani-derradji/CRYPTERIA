@@ -1,18 +1,14 @@
-import os, sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import keyring
+import keyring, sys
 from cryptography.fernet import Fernet
 
 class KeysEncryption:
 
-    @classmethod
-    def set_data_enc_key(cls, key: bytes):
+    def set_data_enc_key(self, key: bytes):
         key_str = key.decode()
         keyring.set_password(f"Crypteria{sys.platform}", "dek_master_1", key_str)
 
-    @classmethod
-    def get_data_enc_key(cls) -> bytes:
+
+    def get_data_enc_key(self) -> bytes:
 
         key_str = keyring.get_password(f"Crypteria{sys.platform}", "dek_master_1")
 

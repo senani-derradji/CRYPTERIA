@@ -1,13 +1,10 @@
-import os, sys, logging, ctypes
-from  crypteria.UTILS.general_utils import PathManager
+import os, sys, logging, ctypes ; sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.general_utils import PathManager
 
 
 app_dir = PathManager.get_appdata_path()
-
 log_path = app_dir / "Lo" / "logs.log"
-
 os.makedirs(log_path.parent, exist_ok=True)
-
 log_path.touch(exist_ok=True)
 
 logging.basicConfig(
