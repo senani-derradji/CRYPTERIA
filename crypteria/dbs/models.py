@@ -4,7 +4,6 @@ from sqlalchemy import Column, Integer, String, LargeBinary, DateTime, create_en
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
 
-# Create Base here to avoid circular import with database.py
 Base = declarative_base()
 
 
@@ -19,8 +18,8 @@ class File(Base):
     file_type = Column(String(5), nullable=False)
     file_length = Column(Integer, nullable=False)
     file_path = Column(LargeBinary, nullable=False)
-    file_sha256 = Column(String(64), nullable=True)  # SHA256 hash for integrity verification
-    nonce = Column(LargeBinary, nullable=True)  # Nonce for AES-256-GCM decryption
+    file_sha256 = Column(String(64), nullable=True)
+    nonce = Column(LargeBinary, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
     action = Column(String)

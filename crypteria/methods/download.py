@@ -30,11 +30,9 @@ enc_dec = KeysEncryption()
 
 path_of_decrypted_downloaded_files = PathManager.get_temp_folder()
 
-# Key manager for handling encryption keys
 _key_manager = KeyManager()
 
 def calculate_sha256(file_path: Path) -> str:
-    """Calculate SHA256 hash of a file"""
     sha256_hash = hashlib.sha256()
     with open(file_path, "rb") as f:
         for byte in iter(lambda: f.read(4096), b""):
@@ -43,7 +41,6 @@ def calculate_sha256(file_path: Path) -> str:
 
 
 def verify_sha256(file_path: Path, expected_hash: str) -> bool:
-    """Verify file SHA256 hash matches expected value"""
     actual_hash = calculate_sha256(file_path)
     if actual_hash == expected_hash:
         logger.info(f"SHA256 verification PASSED: {actual_hash}")
@@ -58,15 +55,12 @@ class DownloadDatacloud:
         self.id_ = id_
         self.use_advanced_encryption = use_advanced_encryption
 
-        # Get or generate key
         if key is None:
             if use_advanced_encryption:
-                # Try to get key from keyring (check both upload_key and master_key)
                 key = _key_manager.get_key("upload_key")
                 if key is None:
                     key = _key_manager.get_key("master_key")
                 if key is None:
-                    # Fall back to legacy key
                     key = load_key()
                     self.use_advanced_encryption = False
             else:
@@ -76,7 +70,6 @@ class DownloadDatacloud:
         self._crypto = None
 
     def _get_crypto(self):
-        """Get or create crypto instance"""
         if self._crypto is None:
             self._crypto = UniversalCrypto(self.key, CryptoMode.GCM)
         return self._crypto
@@ -95,15 +88,12 @@ class DownloadDatacloud:
         print(f"DEBUG: id_ = {id_}", file=sys.stderr, flush=True)
         data_file_type = get_data_type_by_id(db, self.id_)
 
-        # Get stored SHA256 for verification
         stored_sha256 = get_file_sha256(db, self.id_)
         print(f"DEBUG: stored_sha256 = {stored_sha256}", file=sys.stderr, flush=True)
 
-        # Get stored nonce for decryption (from database)
         stored_nonce = get_file_nonce(db, self.id_)
         print(f"DEBUG: stored_nonce = {stored_nonce}", file=sys.stderr, flush=True)
 
-        # Debug: Log what's retrieved
         logger.info(f"Debug - stored_sha256: {stored_sha256}")
         logger.info(f"Debug - stored_nonce type: {type(stored_nonce)}, value: {stored_nonce}")
         logger.info(f"Debug - key type: {type(self.key)}, length: {len(self.key) if self.key else 0}")
@@ -117,20 +107,16 @@ class DownloadDatacloud:
 
         print(f"DEBUG: Downloaded to {data_downloaded}", file=sys.stderr, flush=True)
 
-        # Verify SHA256 of downloaded encrypted file before decryption
         if stored_sha256:
             if not verify_sha256(Path(data_downloaded), stored_sha256):
                 logger.error("File integrity check FAILED! The downloaded file may be corrupted.")
                 return False
 
         if self.use_advanced_encryption:
-            # Use new AES-256-GCM decryption
             crypto = self._get_crypto()
 
-            # Use stored nonce from database (preferred) or fall back to local file
             nonce = stored_nonce
             if nonce is None:
-                # Fall back to local nonce file (for legacy uploads)
                 nonce_file = Path(str(data_downloaded).replace('.enc', '') + '.nonce')
                 if nonce_file.exists():
                     nonce = nonce_file.read_bytes()
@@ -138,40 +124,30 @@ class DownloadDatacloud:
             if nonce:
                 enc_path = Path(data_downloaded)
 
-                # Read the encrypted file
-                # The encrypted file format is: nonce (12 bytes) + ciphertext
                 enc_data = enc_path.read_bytes()
-                # Extract nonce from file (first 12 bytes) and ciphertext (rest)
                 file_nonce = enc_data[:12]
                 ciphertext = enc_data[12:]
 
-                # Use the nonce from the file (not from database) - they're the same but file one is more reliable
                 nonce_to_use = file_nonce
 
-                # Decrypt using AES-256-GCM directly
                 decrypted = crypto.decrypt_gcm(ciphertext, self.key, nonce_to_use)
 
-                # Write decrypted data to output file
                 output_path = Path(str(enc_path).replace('.enc', ''))
                 output_path.write_bytes(decrypted)
 
                 logger.info(f"File decrypted with AES-256-GCM: {output_path}")
                 res = output_path
             else:
-                # Fall back to legacy decryption
                 logger.warning("Nonce file not found, falling back to legacy decryption")
                 try:
                     res = save_decrypted_data(data_downloaded, self.key, data_file_type, path_of_decrypted_downloaded_files)
                 except Exception as e:
-                    # If decryption fails, return the encrypted file path for verification
                     logger.error(f"Decryption failed: {e}. Returning encrypted file path.")
                     return data_downloaded
         else:
-            # Use legacy decryption
             try:
                 res = save_decrypted_data(data_downloaded, self.key, data_file_type, path_of_decrypted_downloaded_files)
             except Exception as e:
-                # If decryption fails, return the encrypted file path
                 logger.error(f"Decryption failed: {e}. Returning encrypted file path.")
                 return data_downloaded
 
@@ -196,7 +172,6 @@ class DownloadDatacloud:
             return False
 
     def download_decrypted_data_bytes(self) -> bytes:
-        """Download and decrypt data, returning bytes directly"""
         file_id_enc = get_file_by_id(db, self.id_)
         if not file_id_enc:
             logger.error(f"File with ID {self.id_} not found.")
@@ -213,15 +188,12 @@ class DownloadDatacloud:
         if self.use_advanced_encryption:
             crypto = self._get_crypto()
 
-            # Check for nonce file
             nonce_file = Path(str(data_downloaded).replace('.enc', '') + '.nonce')
             if nonce_file.exists():
                 nonce = nonce_file.read_bytes()
                 enc_data = Path(data_downloaded).read_bytes()
 
-                # Decrypt directly to bytes
                 decrypted = crypto.decrypt_gcm(enc_data, self.key, nonce)
                 return decrypted
 
-        # Fall back to legacy
         return Path(data_downloaded).read_bytes()

@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from ..utils.general_utils import PathManager
 
-# Import Base and File from models to avoid circular import and ensure proper registration
 from .models import Base, File
 
 p_m = PathManager.get_appdata_path()
@@ -30,5 +29,4 @@ def init_db():
     Base.metadata.create_all(engine)
     print("Database initialized (created if not exists)")
 
-# Auto-initialize database on import
 init_db()

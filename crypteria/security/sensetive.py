@@ -41,4 +41,3 @@ class KeysEncryption:
         elif op == 'dec': return f.decrypt(data)
 
         else: return None
-

@@ -32,7 +32,6 @@ class PathManager:
 
     @staticmethod
     def get_os_type() -> str:
-        """Get the operating system type"""
         return sys.platform
 
     @staticmethod
@@ -75,34 +74,3 @@ class PathManager:
         final_path.mkdir(parents=True, exist_ok=True)
 
         return final_path
-
-
-def save_large_data(service, username, data, block_size=500):
-    blocks = [data[i:i+block_size] for i in range(0, len(data), block_size)]
-
-    for idx, block in enumerate(blocks):
-        keyring.set_password(service, f"{username}_block_{idx}", block)
-
-    keyring.set_password(service, f"{username}_blocks_count", str(len(blocks)))
-
-    return len(blocks)
-
-
-def load_large_data(service, username):
-    count_value = keyring.get_password(service, f"{username}_blocks_count")
-
-    if count_value is None:
-        return None
-
-    count = int(count_value)
-
-    blocks = []
-
-    for idx in range(count):
-        block = keyring.get_password(service, f"{username}_block_{idx}")
-
-        if block is None:
-            raise ValueError(f"Missing block {idx}")
-        blocks.append(block)
-
-    return "".join(blocks)

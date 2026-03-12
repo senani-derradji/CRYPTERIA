@@ -45,4 +45,3 @@ class DataTypeValidate(BaseModel):
             return value
 
         raise ValueError(f"File type '{value.suffix}' not supported.")
-
